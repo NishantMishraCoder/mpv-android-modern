@@ -30,7 +30,7 @@ You can download mpv-android from the [Releases section](https://github.com/mpv-
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/is.xyz.mpv)
 
-**Note**: Android TV is supported, but only available on F-Droid or by installing the APK manually.
+**Note**: Android TV is supported, but only available on F-Droid or by installing the APK manually...
 
 ## Building from source
 
