@@ -1,3 +1,4 @@
+
 package `is`.xyz.mpv
 
 import `is`.xyz.filepicker.AbstractFilePickerFragment
@@ -34,12 +35,19 @@ class FilePickerActivity : AppCompatActivity(), AbstractFilePickerFragment.OnFil
 
     private var lastSeenInsets: WindowInsets? = null
 
-    private var documentOpener = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
-        it?.let { uri ->
-            finishWithResult(RESULT_OK, uri.toString())
-        }
-    }
+    private var documentOpener = registerForActivityResult(
+    ActivityResultContracts.StartActivityForResult()
+) { result ->
 
+    if (result.resultCode != RESULT_OK)
+        return@registerForActivityResult
+
+    val uri = result.data?.data
+
+    uri?.let {
+        finishWithResult(RESULT_OK, it.toString())
+    }
+}
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(null)
         Log.v(TAG, "FilePickerActivity: created")
@@ -382,9 +390,31 @@ class FilePickerActivity : AppCompatActivity(), AbstractFilePickerFragment.OnFil
                 // leave visible, dialog will exit anyway
                 (activity as FilePickerActivity).showUrlDialog()
             }
-            binding.docBtn.setOnClickListener {
-                (activity as FilePickerActivity).documentOpener.launch(arrayOf("*/*"))
-            }
+binding.docBtn.setOnClickListener {
+
+    val baseIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+        type = "*/*"
+        addCategory(Intent.CATEGORY_OPENABLE)
+        putExtra(
+            Intent.EXTRA_MIME_TYPES,
+            arrayOf(
+                "video/*",
+                "audio/*",
+                "application/x-subrip",
+                "text/plain"
+            )
+        )
+    }
+
+    val chooser = Intent.createChooser(
+        baseIntent,
+        "Choose File Manager"
+    )
+
+    (activity as FilePickerActivity)
+        .documentOpener
+        .launch(chooser)
+}
             if (!requireArguments().getBoolean("allow_document", false))
                 binding.docBtn.visibility = View.GONE
         }
